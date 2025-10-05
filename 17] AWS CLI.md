@@ -1,74 +1,95 @@
-## Easy Level
+## Easy (Basic Understanding)
 
-1. **What is AWS CLI?**\
-   AWS CLI (Command Line Interface) is a unified tool to manage AWS services from the command line.
+1. **What is AWS CLI used for?**  
+   - To manage AWS services from the command line.
 
-2. **How do you configure AWS CLI credentials?**
-   ```bash
-   aws configure
-   You provide AWS Access Key, Secret Key, default region, and output format.
+2. **Which command is used to configure AWS CLI credentials?**  
+   - `aws configure`.
 
-3. **How do you check the AWS CLI version?**
-   ```bash
-   aws --version
+3. **How do you launch an EC2 instance using AWS CLI?**  
+   - Use `aws ec2 run-instances` with image ID, instance type, key, and security group.
 
-4. **How do you create a key pair using AWS CLI?**
-   ```bash
-   aws ec2 create-key-pair --key-name MyKeyPair --query 'KeyMaterial' --output text > MyKeyPair.pem
-   ```
-   Then set permissions: chmod 400 MyKeyPair.pem
+4. **How do you create a key pair using AWS CLI?**  
+   - `aws ec2 create-key-pair --key-name <KeyName>`.
 
-5. **How do you SSH into an EC2 instance using a key pair?**
-   ssh -i MyKeyPair.pem ec2-user@<instance-public-ip>
+5. **Which command is used to set permissions for a private key file?**  
+   - `chmod 400 MyKeyPair.pem`.
 
-## Moderate Level
+6. **How do you SSH into an EC2 instance using the key pair?**  
+   - `ssh -i MyKeyPair.pem ec2-user@<instance-public-ip>`.
 
-6. **How do you launch an EC2 instance using AWS CLI?**
-   ```bash
-   aws ec2 run-instances --image-id ami-xxxxxxxx --count 1 --instance-type t2.micro --key-name MyKeyPair --security-groups MySecurityGroup
+7. **Which AWS CLI command is used to create a VPC?**  
+   - `aws ec2 create-vpc --cidr-block <CIDR>`.
 
-7. **How do you create a VPC using AWS CLI?**
-   ```bash
-   aws ec2 create-vpc --cidr-block 10.0.0.0/16 --output json
+8. **How do you create an S3 bucket via AWS CLI?**  
+   - `aws s3api create-bucket --bucket <BucketName> --region <Region>`.
 
-8. **How do you create an S3 bucket using AWS CLI?**
-   ```bash
-   aws s3api create-bucket --bucket <BUCKET_NAME> --region <REGION>
+9. **True or False: AWS CLI can be used to manage all AWS services.**  
+   - True.
 
-9. **How do you list all EC2 instances using AWS CLI?**
-    ```bash
-    aws ec2 describe-instances
+10. **What file stores the AWS CLI configuration by default?**  
+    - `~/.aws/credentials` and `~/.aws/config`.
 
-10. **How do you list all S3 buckets using AWS CLI?**
-    ```bash
-    aws s3 ls
+## Moderate (Application/Scenario-based)
 
-## Hard Level / Scenario-Based
+1. **You want to launch multiple EC2 instances in a single command. Which parameter would you use?**  
+   - `--count`.
 
-11. **Scenario: You want to launch multiple EC2 instances at once.**\
-    Use --count parameter:
-    ```bash
-    aws ec2 run-instances --image-id ami-xxxxxxxx --count 3 --instance-type t2.micro --key-name MyKeyPair --security-groups MySecurityGroup
+2. **Scenario: You forgot your key-pair permissions are too open. What will happen if you SSH into EC2?**  
+   - SSH will fail due to insecure private key permissions.
 
-12. **Scenario: You want to create a VPC and automatically get its VPC ID.**
-    ```bash
-    aws ec2 create-vpc --cidr-block 10.0.0.0/16 --query 'VPC.VPCId' --output text
+3. **How do you specify which region to create AWS resources using CLI?**  
+   - Use `--region <Region>` parameter or `aws configure`.
 
-13. **Scenario: You need to check the public IP of a newly created EC2 instance.**
-    ```bash
-    aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text
+4. **Scenario: You want to create a bucket in a region other than default. Which CLI command would you run?**  
+   - `aws s3api create-bucket --bucket <BucketName> --region <Region>`.
 
-14. **Scenario: You want to copy files from your local system to S3.**
-    ```bash
-    aws s3 cp localfile.txt s3://<BUCKET_NAME>/ --region <REGION>
-    
-15. **Scenario: You need to sync a local folder with an S3 bucket.**
-    ```bash
-    aws s3 sync /local/folder s3://<BUCKET_NAME>/ --region <REGION>
+5. **How can you list all S3 buckets using AWS CLI?**  
+   - `aws s3 ls`.
 
-16. **Scenario: You want to delete an S3 bucket using CLI.**
-    ```bash
-    aws s3 rb s3://<BUCKET_NAME> --force
+6. **Scenario: You accidentally launched an instance in the wrong region. How can you terminate it using CLI?**  
+   - `aws ec2 terminate-instances --instance-ids <InstanceID> --region <Region>`.
 
-17. **Scenario: You want to automate EC2 creation in a script.**
-    Use CLI commands inside a shell script or automation tool with parameters for AMI, instance type, key pair, and security group.
+7. **How do you check the public IP of an EC2 instance using CLI?**  
+   - `aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress'`.
+
+8. **Scenario: You need to create a key-pair and immediately SSH into EC2. Outline the steps.**  
+   - `create-key-pair` → save PEM → `chmod 400` → `ssh -i`.
+
+9. **How do you run CLI commands without entering credentials every time?**  
+   - Use `aws configure` to save access key and secret key.
+
+10. **Scenario: You need to automate EC2 instance creation in a script. Which AWS CLI parameters are essential?**  
+    - `--image-id`, `--instance-type`, `--key-name`, `--security-groups`, `--count`.
+
+## Hard (Advanced/Conceptual + Complex Scenarios)
+
+1. **Scenario: You want to launch an EC2 instance with a specific IAM role using CLI. How?**  
+   - Use `--iam-instance-profile Name=<RoleName>`.
+
+2. **Explain the difference between `aws s3` and `aws s3api` commands.**  
+   - `aws s3` is high-level; `aws s3api` is low-level with full API control.
+
+3. **Scenario: You need to copy a local folder to an S3 bucket recursively. Which CLI command will you use?**  
+   - `aws s3 cp <local_path> s3://<bucket_name> --recursive`.
+
+4. **How can you configure AWS CLI to use a profile for multiple AWS accounts?**  
+   - Use `aws configure --profile <profile_name>` and `--profile <profile>` in commands.
+
+5. **Scenario: You want to tag an EC2 instance at creation using CLI. Which parameter do you use?**  
+   - `--tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=MyInstance}]'`.
+
+6. **Explain the use of `--query` in AWS CLI.**  
+   - Filters CLI output using JMESPath expressions.
+
+7. **Scenario: You want to launch EC2 instances in a specific subnet via CLI. How would you do it?**  
+   - Use `--subnet-id <SubnetID>` parameter in `run-instances`.
+
+8. **Scenario: You want to enable versioning for an S3 bucket using CLI. How?**  
+   - `aws s3api put-bucket-versioning --bucket <BucketName> --versioning-configuration Status=Enabled`.
+
+9. **How do you delete all objects in an S3 bucket using CLI before deleting the bucket itself?**  
+   - `aws s3 rm s3://<BucketName> --recursive`.
+
+10. **Scenario: Automating EC2 instance launch and monitoring requires CLI and CloudWatch integration. Outline the steps.**  
+    - Launch instance → attach IAM role → configure CloudWatch metrics → set alarms using CLI.
